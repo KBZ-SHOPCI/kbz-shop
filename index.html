@@ -180,9 +180,8 @@
 
       return (
         <div className="flex flex-col min-h-screen">
-          <div className="bg-gold-600 text-black text-xs font-bold py-1.5 px-4 text-center tracking-wider uppercase flex justify-between items-center">
-            <span className="mx-auto">🚀 LIVRAISON EXPRESS À ABIDJAN | WHATSAPP : +{config.whatsapp}</span>
-            <button onClick={() => setCurrentView('admin')} className="text-black underline text-xs font-semibold">Espace Vendeur</button>
+          <div className="bg-gold-600 text-black text-xs font-bold py-1.5 px-4 text-center tracking-wider uppercase">
+            🚀 LIVRAISON EXPRESS À ABIDJAN | WHATSAPP : +{config.whatsapp}
           </div>
 
           <header className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-md border-b border-gray-800">
@@ -192,8 +191,7 @@
                 <h1 className="text-xl font-black tracking-wider text-white uppercase">{config.shopName}</h1>
               </div>
               <div className="flex items-center gap-6">
-                <button onClick={() => setCurrentView('shop')} className="text-sm font-semibold text-gray-300 hover:text-gold-400">Catalogue</button>
-                <button onClick={() => setCurrentView('team')} className="text-sm font-semibold text-gray-300 hover:text-gold-400">Équipe</button>
+                <button onClick={() => setCurrentView('shop')} className="text-sm font-semibold text-gray-300 hover:text-gold-400">Boutique</button>
                 <button onClick={() => setCurrentView('cart')} className="relative p-2 text-gray-300 hover:text-gold-400">
                   <Icon name="shopping-bag" className="w-6 h-6" />
                   {cart.length > 0 && <span className="absolute top-0 right-0 w-5 h-5 bg-gold-500 text-black text-xs font-bold rounded-full flex items-center justify-center">{cart.reduce((a,b)=>a+b.quantity,0)}</span>}
@@ -205,26 +203,29 @@
           <main className="flex-grow">
             {currentView === 'home' && (
               <div>
-                <section className="relative h-[450px] bg-gradient-to-r from-gray-950 to-gray-900 flex items-center border-b border-gray-800 px-6">
-                  <div className="max-w-3xl">
-                    <span className="px-3 py-1 bg-gold-500/10 text-gold-400 text-xs font-bold rounded-full border border-gold-500/30 uppercase">Collection 2026</span>
-                    <h2 className="text-4xl md:text-5xl font-black text-white my-4 uppercase">Ton style, ton choix.</h2>
-                    <p className="text-gray-400 mb-6 text-sm md:text-base">Vêtements, chaussures et accessoires de mode à Abidjan. Commande directement sur WhatsApp.</p>
-                    <button onClick={() => setCurrentView('shop')} className="bg-gold-500 text-black font-bold px-8 py-3 rounded-xl uppercase tracking-wider text-xs shadow-lg shadow-gold-500/20">Voir les articles</button>
+                <section className="relative h-[480px] bg-gradient-to-r from-gray-950 to-gray-900 flex items-center border-b border-gray-800 px-6">
+                  <div className="max-w-3xl space-y-4">
+                    <span className="px-3 py-1 bg-gold-500/10 text-gold-400 text-xs font-bold rounded-full border border-gold-500/30 uppercase">Nouvelle Collection Black & Gold</span>
+                    <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tight">L'Élégance Urbaine à Abidjan</h2>
+                    <p className="text-gray-400 text-sm md:text-base">Découvrez nos vêtements, chaussures et accessoires tendance. Commandez en quelques clics.</p>
+                    <button onClick={() => setCurrentView('shop')} className="bg-gold-500 text-black font-bold px-8 py-3.5 rounded-xl uppercase tracking-wider text-xs shadow-lg shadow-gold-500/20">Explorer le catalogue</button>
                   </div>
                 </section>
 
                 <section className="py-12 max-w-7xl mx-auto px-4">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-black text-white uppercase tracking-wider">Coup de cœur (Défilement horizontal)</h3>
-                    <button onClick={() => setCurrentView('shop')} className="text-gold-400 text-xs font-bold hover:underline">Tout voir →</button>
+                  <div className="flex justify-between items-center mb-8">
+                    <h3 className="text-xl font-black text-white uppercase tracking-wider">Articles Vedettes</h3>
+                    <button onClick={() => setCurrentView('shop')} className="text-gold-400 text-xs font-bold hover:underline">Voir tout →</button>
                   </div>
-                  <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4">
-                    {products.map(product => (
-                      <div key={product.id} onClick={() => { setSelectedProduct(product); setCurrentView('product'); }} className="min-w-[220px] max-w-[220px] bg-gray-900 border border-gray-800 rounded-xl overflow-hidden cursor-pointer hover:border-gold-500/50 flex-shrink-0 p-3">
-                        <img src={product.images[0]} alt="" className="w-full h-48 object-cover rounded-lg mb-3" />
-                        <h4 className="font-bold text-white text-sm truncate">{product.name}</h4>
-                        <p className="text-gold-400 font-bold text-sm mt-1">{formatPrice(product.promoPrice || product.price)}</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {products.slice(0, 4).map(product => (
+                      <div key={product.id} onClick={() => { setSelectedProduct(product); setCurrentView('product'); }} className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden cursor-pointer hover:border-gold-500/50 p-3 flex flex-col justify-between transition">
+                        <img src={product.images[0]} alt="" className="w-full h-48 object-cover rounded-xl mb-3" />
+                        <div>
+                          <span className="text-[10px] text-gold-500 font-bold uppercase tracking-wider">{product.category}</span>
+                          <h4 className="font-bold text-white text-sm line-clamp-1">{product.name}</h4>
+                          <p className="text-gold-400 font-black text-sm mt-1">{formatPrice(product.promoPrice || product.price)}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -366,23 +367,6 @@
               </div>
             )}
 
-            {currentView === 'team' && (
-              <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
-                <h2 className="text-2xl font-black text-white uppercase">Équipe KBZ Shop</h2>
-                <p className="text-gray-400 text-xs">Voici les collaborateurs habilités à gérer le suivi des commandes et des livraisons pour KBZ Shop.</p>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="bg-gray-900 border border-gray-800 p-4 rounded-xl">
-                    <h4 className="font-bold text-white text-sm">Kamagaté Solo</h4>
-                    <p className="text-gold-400 text-xs">Fondateur & Administrateur Principal</p>
-                  </div>
-                  <div className="bg-gray-900 border border-gray-800 p-4 rounded-xl">
-                    <h4 className="font-bold text-white text-sm">Collaborateur / Gestionnaire</h4>
-                    <p className="text-gold-400 text-xs">Suivi des commandes & Livraisons Abidjan</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {currentView === 'admin' && (
               <div className="max-w-4xl mx-auto px-4 py-10">
                 {!isAdminAuth ? (
@@ -400,10 +384,10 @@
                 ) : (
                   <div className="space-y-6">
                     <div className="flex justify-between items-center bg-gray-900 border border-gray-800 p-4 rounded-xl">
-                      <h2 className="font-bold text-white uppercase text-sm">Panneau de Gestion Vendeur</h2>
+                      <h2 className="font-bold text-white uppercase text-sm">Panneau de Gestion & Équipe</h2>
                       <div className="flex gap-2">
                         <button onClick={() => setAdminTab('orders')} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${adminTab === 'orders' ? 'bg-gold-500 text-black' : 'bg-gray-800 text-white'}`}>Commandes ({orders.length})</button>
-                        <button onClick={() => setAdminTab('products')} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${adminTab === 'products' ? 'bg-gold-500 text-black' : 'bg-gray-800 text-white'}`}>Articles</button>
+                        <button onClick={() => setAdminTab('team')} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${adminTab === 'team' ? 'bg-gold-500 text-black' : 'bg-gray-800 text-white'}`}>Équipe</button>
                       </div>
                     </div>
 
@@ -427,10 +411,19 @@
                       </div>
                     )}
 
-                    {adminTab === 'products' && (
+                    {adminTab === 'team' && (
                       <div className="space-y-4">
-                        <h3 className="font-bold text-white text-sm uppercase">Gestion du Catalogue</h3>
-                        <p className="text-gray-400 text-xs">Vos articles sont synchronisés en temps réel.</p>
+                        <h3 className="font-bold text-white text-sm uppercase">Équipe KBZ Shop</h3>
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div className="bg-gray-950 border border-gray-800 p-4 rounded-xl">
+                            <h4 className="font-bold text-white text-sm">Kamagaté Solo</h4>
+                            <p className="text-gold-400 text-xs">Fondateur & Administrateur Principal</p>
+                          </div>
+                          <div className="bg-gray-950 border border-gray-800 p-4 rounded-xl">
+                            <h4 className="font-bold text-white text-sm">Équipe de Gestion</h4>
+                            <p className="text-gold-400 text-xs">Suivi des commandes & Livraisons Abidjan</p>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -439,8 +432,13 @@
             )}
           </main>
 
-          <footer className="bg-gray-900 border-t border-gray-800 mt-20 text-center py-6 text-xs text-gray-500">
-            © 2026 KBZ Shop. Tous droits réservés. WhatsApp : +{config.whatsapp}
+          <footer className="bg-gray-900 border-t border-gray-800 mt-20 py-8 px-4 text-center text-xs text-gray-500 space-y-3">
+            <p>© 2026 KBZ Shop. Tous droits réservés. WhatsApp : +{config.whatsapp}</p>
+            <div>
+              <button onClick={() => setCurrentView('admin')} className="text-gold-400 font-bold hover:underline uppercase tracking-wider">
+                🔐 Espace Vendeur (Administration)
+              </button>
+            </div>
           </footer>
         </div>
       );

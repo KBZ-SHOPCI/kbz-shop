@@ -7,6 +7,7 @@ var PER=6;
 
 var st=document.createElement('style');
 st.textContent=
+'#app{overflow-x:clip}'+
 '.crow{display:flex;justify-content:space-between;align-items:center;margin:24px 0 8px}'+
 '.crow h3{margin:0}'+
 '.crow button{background:none;border:0;color:#2447e5;font-weight:700;font-size:14px;cursor:pointer}'+
@@ -34,7 +35,8 @@ function groups(){
     var c=p.category||'Autres';
     (by[c]=by[c]||[]).push(p);
   });
-  var names=ORDER.filter(function(c){return by[c];});
+  var names=ORDER.slice();
+  names.forEach(function(c){if(!by[c])by[c]=[];});
   Object.keys(by).forEach(function(c){if(names.indexOf(c)<0)names.push(c);});
   return {by:by,names:names};
 }
@@ -44,9 +46,12 @@ K.views.home=function(app){
   var g=groups();
   var h='<section class="hero"><div class="wrap"><span class="tag">'+K.esc(K.cfg.slogan||'')+'</span><h2>L\'élégance urbaine à Abidjan</h2><p>Maillots, vêtements, chaussures et accessoires tendance. Commandez en quelques clics, on vous livre.</p><button class="btn" data-go="cats">Voir les catégories</button></div></section>'+
     '<section class="sec"><div class="wrap">';
-  if(!g.names.length)h+='<p class="mut center">Les articles arrivent bientôt.</p>';
   g.names.forEach(function(c){
     var l=g.by[c],n=K.esc(c);
+    if(!l.length){
+      h+='<div class="crow"><h3>'+n+'</h3></div><p class="mut" style="margin:0 0 8px">Bientôt disponible</p>';
+      return;
+    }
     h+='<div class="crow"><h3>'+n+'</h3><button data-go="cat" data-arg="'+n+'">Voir plus →</button></div>'+
        '<div class="hrow">'+l.slice(0,PER).map(card).join('');
     if(l.length>PER)h+='<button class="more" data-go="cat" data-arg="'+n+'">Voir plus<br>('+(l.length-PER)+' autres)</button>';
@@ -61,7 +66,7 @@ K.views.cat=function(app,name){
   var l=vis().filter(function(p){return(p.category||'Autres')===name;});
   app.innerHTML='<section class="sec"><div class="wrap"><button class="mut" data-go="home" style="margin:6px 0 12px">← Retour à l\'accueil</button>'+
     '<h3>'+K.esc(name)+' <span class="mut" style="font-size:14px">('+l.length+')</span></h3>'+
-    (l.length?'<div class="grid">'+l.map(card).join('')+'</div>':'<p class="mut center" style="padding:30px 0">Aucun article dans cette catégorie.</p>')+
+    (l.length?'<div class="grid">'+l.map(card).join('')+'</div>':'<p class="mut center" style="padding:30px 0">Bientôt disponible.</p>')+
     '</div></section>';
 };
 
@@ -71,23 +76,11 @@ K.views.cats=function(app){
   var h='<section class="sec"><div class="wrap"><button class="mut" data-go="home" style="margin:6px 0 12px">← Retour à l\'accueil</button><h3>Catégories</h3><div class="ctiles">';
   g.names.forEach(function(c){
     var l=g.by[c],n=K.esc(c);
-    h+='<button class="ctile" data-go="cat" data-arg="'+n+'"><img loading="lazy" src="'+K.esc(K.cover(l[0]))+'" alt=""><b>'+n+'</b><span>'+l.length+' article'+(l.length>1?'s':'')+'</span></button>';
+    h+='<button class="ctile" data-go="cat" data-arg="'+n+'"><img loading="lazy" src="'+K.esc(l.length?K.cover(l[0]):K.PH)+'" alt=""><b>'+n+'</b><span>'+(l.length?l.length+' article'+(l.length>1?'s':''):'Bientôt disponible')+'</span></button>';
   });
-  h+='</div>'+(g.names.length?'':'<p class="mut center">Aucune catégorie pour le moment.</p>')+'</div></section>';
+  h+='</div></div></section>';
   app.innerHTML=h;
 };
 
-/* Bouton Categories dans l'en-tete */
-var oldHd=K.renderHd;
-K.renderHd=function(){
-  oldHd();
-  var nav=K.$('#hd .nav');
-  if(nav&&!nav.querySelector('[data-go="cats"]')){
-    var b=document.createElement('button');
-    b.setAttribute('data-go','cats');
-    b.textContent='Catégories';
-    nav.insertBefore(b,nav.firstChild);
-  }
-};
 })();
 // FIN app8.js

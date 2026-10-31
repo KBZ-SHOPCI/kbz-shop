@@ -1,18 +1,29 @@
 (function(){
 'use strict';
 var C=window.KBZ_CONFIG||{};
-var K=window.K={views:{},cfg:{},sb:null,
+var K=window.K={views:{},cfg:{},sb:null,baseTitle:document.title,
   state:{products:[],user:null,staff:null,view:'home',arg:null,cat:'all',q:''}};
+K.titles={shop:'Boutique',cat:'Catégorie',cats:'Catégories',product:'Article',cart:'Panier',checkout:'Commande',success:'Commande enregistrée',admin:'Espace vendeur'};
 
 K.esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
 K.fmt=function(n){return new Intl.NumberFormat('fr-FR').format(n||0)+' FCFA';};
 K.$=function(s,r){return(r||document).querySelector(s);};
 K.$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+
+/* Messages annonces aux lecteurs d'ecran */
+var live=document.createElement('div');
+live.className='sr';
+live.setAttribute('role','status');
+live.setAttribute('aria-live','polite');
+document.body.appendChild(live);
 K.toast=function(m,bad){
   var t=document.createElement('div');
   t.className='toast'+(bad?' bad':'');
+  t.setAttribute('aria-hidden','true');
   t.textContent=m;
   document.body.appendChild(t);
+  live.textContent='';
+  setTimeout(function(){live.textContent=m;},60);
   setTimeout(function(){t.remove();},bad?4500:2200);
 };
 K.PH='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="400" height="400" fill="#1a1a21"/><text x="200" y="215" font-size="60" text-anchor="middle" fill="#d4a437" font-family="Arial" font-weight="bold">KBZ</text></svg>');
@@ -48,7 +59,7 @@ K.cover=function(p){var im=K.images(p);return im.length?im[0].url:K.PH;};
 /* ---------- Connexion a la base ---------- */
 K.fatal=function(msg){
   var a=K.$('#app');
-  if(a)a.innerHTML='<div class="wrap"><div class="box center"><p><b>Oups, le site ne peut pas se charger.</b></p><p class="mut" style="margin-top:8px">'+K.esc(msg)+'</p><p style="margin-top:12px"><button class="btn s" onclick="location.reload()">Réessayer</button></p></div></div>';
+  if(a)a.innerHTML='<div class="wrap"><div class="box center" role="alert"><p><b>Oups, le site ne peut pas se charger.</b></p><p class="mut" style="margin-top:8px">'+K.esc(msg)+'</p><p style="margin-top:12px"><button class="btn s" onclick="location.reload()">Réessayer</button></p></div></div>';
 };
 K.init=function(){
   if(!window.supabase||!C.SUPABASE_URL||!C.SUPABASE_KEY){
@@ -95,11 +106,11 @@ K.renderHd=function(){
   var h=K.$('#hd');
   if(!h)return;
   var n=K.cartCount();
-  h.innerHTML='<div class="topbar">🚀 Livraison à Abidjan | WhatsApp : +'+K.esc(K.cfg.whatsapp||'')+'</div>'+
-    '<header class="hd"><div class="wrap">'+
-    '<div class="logo" data-go="home"><i>K</i><span>'+K.esc(K.cfg.shop_name||'KBZ SHOP')+'</span></div>'+
-    '<div class="nav"><button data-go="shop">Boutique</button>'+
-    '<button class="cartb" data-go="cart">🛍️'+(n?'<span class="badge">'+n+'</span>':'')+'</button></div>'+
+  var shop=K.esc(K.cfg.shop_name||'KBZ SHOP');
+  h.innerHTML='<header class="hd"><div class="wrap">'+
+    '<button class="logo" data-go="home" aria-label="'+shop+', retour à l\'accueil"><i aria-hidden="true">K</i><span aria-hidden="true">'+shop+'</span></button>'+
+    '<nav class="nav" aria-label="Menu principal"><button data-go="shop">Boutique</button>'+
+    '<button class="cartb" data-go="cart" aria-label="Panier, '+n+' article'+(n>1?'s':'')+'"><span aria-hidden="true">🛍️</span>'+(n?'<span class="badge" aria-hidden="true">'+n+'</span>':'')+'</button></nav>'+
     '</div></header>';
 };
 K.renderFt=function(){
@@ -107,7 +118,7 @@ K.renderFt=function(){
   if(!f)return;
   f.innerHTML='<footer class="ft"><p>© 2026 '+K.esc(K.cfg.shop_name||'KBZ SHOP')+' — '+K.esc(K.cfg.address||'')+'</p>'+
     '<p>'+K.esc(K.cfg.phone||'')+(K.cfg.email?' · '+K.esc(K.cfg.email):'')+'</p>'+
-    '<p style="margin-top:10px"><button data-go="admin">🔐 Espace Vendeur</button></p></footer>';
+    '<p style="margin-top:10px"><button data-go="admin"><span aria-hidden="true">🔐</span> Espace Vendeur</button></p></footer>';
 };
 
 /* ---------- Navigation ---------- */
@@ -120,8 +131,11 @@ K.go=function(v,a){
   app.innerHTML='';
   try{f(app,a);}
   catch(e){K.fatal('Erreur d\'affichage : '+e.message);}
+  document.title=K.titles[v]?K.titles[v]+' | '+(K.cfg.shop_name||'KBZ SHOP'):K.baseTitle;
   K.renderHd();
   window.scrollTo(0,0);
+  app.setAttribute('tabindex','-1');
+  try{app.focus({preventScroll:true});}catch(x){}
 };
 document.addEventListener('click',function(e){
   var t=e.target.closest('[data-go]');

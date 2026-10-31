@@ -6,33 +6,33 @@
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
 <title>Activer mon compte | KBZ SHOP</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="hd"><div class="wrap"><div class="logo"><i></i><span>KBZ SHOP</span></div></div></header>
+<header class="hd"><div class="wrap"><a class="logo" href="index.html" aria-label="KBZ SHOP, retour à la boutique" style="text-decoration:none"><span aria-hidden="true">KBZ SHOP</span></a></div></header>
 <main>
 <div class="wrap sec" style="max-width:440px">
 <div class="box">
-<h3 style="font-size:22px">Activer mon compte</h3>
+<h1 style="font-size:22px;font-weight:800">Activer mon compte</h1>
 <p class="mut" style="margin-bottom:6px">Entre le code à 6 chiffres que tu as reçu séparément, puis choisis ton mot de passe.</p>
 <form id="f" autocomplete="off">
-<label>Code à 6 chiffres</label>
+<label for="code">Code à 6 chiffres</label>
 <input id="code" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required>
-<label>Choisis ton mot de passe (8 caractères minimum)</label>
-<input id="pw" type="password" autocomplete="new-password" minlength="8" required>
-<label>Répète ton mot de passe</label>
+<label for="pw">Choisis ton mot de passe</label>
+<input id="pw" type="password" autocomplete="new-password" minlength="8" aria-describedby="hp" required>
+<p class="mut" id="hp">8 caractères minimum.</p>
+<label for="pw2">Répète ton mot de passe</label>
 <input id="pw2" type="password" autocomplete="new-password" minlength="8" required>
-<label style="display:flex;gap:8px;align-items:center;font-weight:500"><input id="sh" type="checkbox" style="width:auto"> Afficher les mots de passe</label>
+<label for="sh" style="display:flex;gap:8px;align-items:center;font-weight:500"><input id="sh" type="checkbox" style="width:auto"> Afficher les mots de passe</label>
 <button class="btn full" style="margin-top:14px" id="go">Activer mon compte</button>
 </form>
-<p class="err" id="er"></p>
+<p class="err" id="er" role="alert"></p>
 <div id="ok" class="hide center">
-<div style="font-size:48px">✅</div>
-<h3 style="font-size:20px">Compte activé !</h3>
+<div aria-hidden="true" style="font-size:48px">✅</div>
+<h2 id="oh" tabindex="-1" style="font-size:20px;font-weight:800">Compte activé !</h2>
 <p class="mut" id="okm" style="margin:8px 0 16px"></p>
 <a class="btn full" href="index.html">Aller à la boutique</a>
-<p class="mut" style="margin-top:10px">Tout en bas de la page, touche « Espace vendeur » pour te connecter.</p>
+<p class="mut" style="margin-top:10px">Tout en bas de la page, touche « Espace Vendeur » pour te connecter.</p>
 </div>
 </div>
 </div>
@@ -71,6 +71,7 @@ f.onsubmit=async function(e){
       f.classList.add('hide');
       $('okm').textContent='Connecte-toi avec '+d.email+' et le mot de passe que tu viens de choisir.';
       $('ok').classList.remove('hide');
+      $('oh').focus();
     }else{
       er.textContent=(d&&d.error)||'Activation impossible.';
       b.disabled=false;b.textContent='Activer mon compte';
@@ -83,4 +84,4 @@ f.onsubmit=async function(e){
 })();
 </script>
 </body>
-                                                                                                 </html>
+  </html>

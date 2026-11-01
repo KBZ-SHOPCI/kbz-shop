@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /activer.html
+Disallow: /activer
+
+Sitemap: https://kbz-shop.pages.dev/sitemap.xml

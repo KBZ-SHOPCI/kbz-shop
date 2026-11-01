@@ -116,7 +116,14 @@ K.renderHd=function(){
 K.renderFt=function(){
   var f=K.$('#ft');
   if(!f)return;
-  f.innerHTML='<footer class="ft"><p>© 2026 '+K.esc(K.cfg.shop_name||'KBZ SHOP')+' — '+K.esc(K.cfg.address||'')+'</p>'+
+  f.innerHTML='<footer class="ft"><nav aria-label="Informations légales"><ul style="list-style:none;display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;margin-bottom:12px">'+
+    '<li><a href="mentions-legales.html">Mentions légales</a></li>'+
+    '<li><a href="conditions-de-vente.html">Conditions de vente</a></li>'+
+    '<li><a href="confidentialite.html#confidentialite">Confidentialité</a></li>'+
+    '<li><a href="confidentialite.html#cookies">Cookies</a></li>'+
+    '<li><a href="confidentialite.html#remboursement">Échange et remboursement</a></li>'+
+    '</ul></nav>'+
+    '<p>© 2026 '+K.esc(K.cfg.shop_name||'KBZ SHOP')+' — '+K.esc(K.cfg.address||'')+'</p>'+
     '<p>'+K.esc(K.cfg.phone||'')+(K.cfg.email?' · '+K.esc(K.cfg.email):'')+'</p>'+
     '<p style="margin-top:10px"><button data-go="admin"><span aria-hidden="true">🔐</span> Espace Vendeur</button></p></footer>';
 };

@@ -1,0 +1,20 @@
+# KBZ SHOP
+
+> Boutique en ligne de maillots, vêtements, chaussures et accessoires à Abobo, Abidjan (Côte d'Ivoire). Les prix sont en francs CFA (FCFA). Les clients commandent sur le site, puis la commande est confirmée sur WhatsApp.
+
+## À savoir
+- Site : https://kbz-shop.pages.dev
+- Contact : WhatsApp et téléphone 05 08 67 46 26, e-mail kbzshopci@gmail.com
+- Catégories : Maillots, Vêtements, Chaussures, Accessoires
+- Commande : le client choisit ses articles (couleur et taille), remplit un formulaire (nom, téléphone, adresse ou commune), puis confirme avec la boutique sur WhatsApp
+- Paiement : un dépôt de confirmation par Mobile Money (la moitié du prix de l'article ou 2 000 FCFA), puis le reste et les frais de livraison au livreur à la livraison
+- Livraison : par des livreurs indépendants, 1 à 2 jours à Abidjan après confirmation
+- Échange et remboursement : article défectueux ou erreur de la boutique, échange ou remboursement ; voir la page ci-dessous
+
+## Pages
+- [Conditions de vente et d'utilisation](https://kbz-shop.pages.dev/conditions-de-vente)
+- [Confidentialité, cookies, échange et remboursement](https://kbz-shop.pages.dev/confidentialite)
+- [Mentions légales](https://kbz-shop.pages.dev/mentions-legales)
+
+## Remarque
+Le catalogue est affiché par JavaScript à partir d'une base de données : les articles n'ont pas de pages séparées.

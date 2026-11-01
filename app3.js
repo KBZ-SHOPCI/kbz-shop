@@ -73,13 +73,21 @@ K.views.checkout=function(app){
     '<label for="fp">Téléphone *</label><input id="fp" name="p" type="tel" inputmode="tel" required maxlength="16" autocomplete="tel">'+
     '<label for="fa">Adresse / Commune (ex : Abobo, Cocody) *</label><input id="fa" name="a" required maxlength="200" autocomplete="street-address">'+
     '<label for="fm">Mode de paiement</label><select id="fm" name="m"><option value="livraison">Paiement à la livraison</option><option value="mobile_money">Mobile Money (Orange, MTN, Wave)</option></select>'+
-    '<p class="mut" style="margin-top:14px">Ces informations (nom, téléphone, adresse) servent uniquement à traiter, confirmer et livrer votre commande.</p>'+
+    '<p class="mut" style="margin-top:14px"><b style="color:var(--txt)">Pour valider votre commande</b>, vous envoyez un dépôt de confirmation par Mobile Money : la moitié du prix de l\'article, ou 2 000 FCFA. Nous vous indiquons le montant et le numéro sur WhatsApp. Vous payez le reste et la livraison au livreur, à la livraison.</p>'+
+    '<p class="mut" style="margin-top:10px">Votre nom, votre téléphone et votre adresse servent uniquement à traiter et livrer votre commande.</p>'+
     '<p class="mut" style="margin-top:14px">Sous-total : '+K.fmt(t.sub)+'<br>Livraison (frais confirmés sur WhatsApp) : '+K.fmt(t.fee)+'<br><b style="color:var(--txt)">Total : '+K.fmt(t.sub+t.fee)+'</b></p>'+
+    '<label for="fc" style="display:flex;gap:10px;align-items:flex-start;font-weight:500;font-size:14px;color:var(--txt);margin-top:14px"><input id="fc" type="checkbox" required style="width:22px;height:22px;flex:none;margin-top:2px"><span>J\'accepte les <a href="conditions-de-vente.html" target="_blank" rel="noopener" style="color:var(--gold);font-weight:700">conditions de vente</a> et la <a href="confidentialite.html#confidentialite" target="_blank" rel="noopener" style="color:var(--gold);font-weight:700">politique de confidentialité</a> *</span></label>'+
     '<button class="btn full" style="margin-top:14px" id="go">Valider ma commande</button><p class="err" id="er" role="alert"></p><div id="bk"></div></form></div></div>';
   K.$('#f').onsubmit=async function(e){
     e.preventDefault();
     var f=e.target,b=K.$('#go'),er=K.$('#er');
-    er.textContent='';b.disabled=true;b.textContent='Envoi…';
+    er.textContent='';
+    if(!K.$('#fc').checked){
+      er.textContent='Pour commander, acceptez les conditions de vente et la politique de confidentialité.';
+      K.$('#fc').focus();
+      return;
+    }
+    b.disabled=true;b.textContent='Envoi…';
     var info={name:f.n.value.trim(),phone:f.p.value.trim(),address:f.a.value.trim(),pay:f.m.value,items:K.cart.slice()};
     try{
       var r=await K.rpc('create_order',{p_name:info.name,p_phone:info.phone,p_address:info.address,p_payment:info.pay,
@@ -101,7 +109,7 @@ K.views.success=function(app){
   app.onclick=null;
   var o=K.last;
   if(!o){K.go('home');return;}
-  app.innerHTML='<div class="wrap sec center" style="max-width:480px"><div aria-hidden="true" style="font-size:48px">✅</div><h1 '+H1+'>Commande enregistrée !</h1><p class="price">Référence : '+K.esc(o.ref)+'</p><p class="mut" style="margin:10px 0 16px">Total : '+K.fmt(o.total)+'. Envoyez maintenant votre commande sur WhatsApp pour que nous la confirmions avec vous.</p><a class="btn wa full" target="_blank" rel="noopener" href="'+K.esc(K.waLink(waText(o)))+'">Envoyer sur WhatsApp'+NEW+'</a><p style="margin-top:14px"><button class="btn alt s" data-go="shop">Continuer mes achats</button></p></div>';
+  app.innerHTML='<div class="wrap sec center" style="max-width:480px"><div aria-hidden="true" style="font-size:48px">✅</div><h1 '+H1+'>Commande enregistrée !</h1><p class="price">Référence : '+K.esc(o.ref)+'</p><p class="mut" style="margin:10px 0 16px">Total : '+K.fmt(o.total)+'. Envoyez maintenant votre commande sur WhatsApp pour que nous la confirmions avec vous. Nous vous indiquerons le montant du dépôt de confirmation à envoyer par Mobile Money.</p><a class="btn wa full" target="_blank" rel="noopener" href="'+K.esc(K.waLink(waText(o)))+'">Envoyer sur WhatsApp'+NEW+'</a><p style="margin-top:14px"><button class="btn alt s" data-go="shop">Continuer mes achats</button></p></div>';
 };
 })();
 // FIN app3.js

@@ -12,18 +12,9 @@ K.fmt=function(n){return new Intl.NumberFormat('fr-FR').format(n||0)+' FCFA';};
 K.$=function(s,r){return(r||document).querySelector(s);};
 K.$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
 
-/* Styles du pied de page et de la barre fixe (etape 1 du nouveau design) */
+/* Styles du pied de page (etape 1 du nouveau design) */
 var st=document.createElement('style');
 st.textContent=[
-'.bn{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border-top:1px solid #e5e9f2;box-shadow:0 -4px 16px rgba(15,23,42,.08);padding-bottom:env(safe-area-inset-bottom)}',
-'.bn button,.bn a{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border:0;background:none;font:600 12px system-ui,sans-serif;color:#5b6478;text-decoration:none;cursor:pointer}',
-'.bn button:active,.bn a:active{transform:scale(.94)}',
-'.bn span{font-size:20px;line-height:1}',
-'.bn .on{color:#2447e5}',
-'.bn .on::before{content:"";position:absolute;top:0;width:28px;height:3px;border-radius:0 0 3px 3px;background:#ffc933}',
-'.bn a{color:#15803d}',
-'.bnb{position:absolute;top:2px;left:calc(50% + 6px);min-width:18px;height:18px;border-radius:9px;background:#d92d3a;color:#fff;font:700 11px/18px system-ui,sans-serif;text-align:center;font-style:normal}',
-'body.hasbn{padding-bottom:64px}',
 '.ft2{background:#0f172a;color:#e2e8f0;text-align:center;padding:28px 18px 22px;font-size:14px}',
 '.ft2 a{color:#cbd5e1}',
 '.ft2b b{display:block;font-size:22px;letter-spacing:1px;color:#fff}',
@@ -128,7 +119,7 @@ K.waLink=function(text){
   return'https://wa.me/'+(K.cfg.whatsapp||'')+'?text='+encodeURIComponent(text);
 };
 
-/* ---------- En-tete, barre fixe, pied de page ---------- */
+/* ---------- En-tete, pied de page ---------- */
 K.renderHd=function(){
   var h=K.$('#hd');
   if(!h)return;
@@ -139,27 +130,6 @@ K.renderHd=function(){
     '<nav class="nav" aria-label="Menu principal"><button data-go="shop">Boutique</button>'+
     '<button class="cartb" data-go="cart" aria-label="Panier, '+n+' article'+(n>1?'s':'')+'"><span aria-hidden="true">🛍️</span>'+(n?'<span class="badge" aria-hidden="true">'+n+'</span>':'')+'</button></nav>'+
     '</div></header>';
-  K.renderBn();
-};
-K.renderBn=function(){
-  var b=K.$('#bn');
-  if(!b){
-    b=document.createElement('nav');
-    b.id='bn';b.className='bn';
-    b.setAttribute('aria-label','Navigation rapide');
-    document.body.appendChild(b);
-  }
-  var v=K.state.view,n=K.cartCount();
-  var show=v!=='admin';
-  b.style.display=show?'':'none';
-  document.body.classList.toggle('hasbn',show);
-  function it(go,ic,lb,on,x){
-    return'<button data-go="'+go+'"'+(on?' class="on" aria-current="page"':'')+'><span aria-hidden="true">'+ic+'</span>'+lb+(x||'')+'</button>';
-  }
-  b.innerHTML=it('home','🏠','Accueil',v==='home')+
-    it('shop','🛍️','Boutique',v==='shop'||v==='cat'||v==='cats'||v==='product')+
-    it('cart','🛒','Panier',v==='cart'||v==='checkout',n?'<i class="bnb">'+n+'</i>':'')+
-    '<a href="'+K.waLink('Bonjour '+(K.cfg.shop_name||'KBZ SHOP')+', j\'ai une question.')+'" target="_blank" rel="noopener"><span aria-hidden="true">💬</span>WhatsApp</a>';
 };
 K.renderFt=function(){
   var f=K.$('#ft');

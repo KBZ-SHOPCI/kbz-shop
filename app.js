@@ -4,11 +4,38 @@ var C=window.KBZ_CONFIG||{};
 var K=window.K={views:{},cfg:{},sb:null,baseTitle:document.title,
   state:{products:[],user:null,staff:null,view:'home',arg:null,cat:'all',q:''}};
 K.titles={shop:'Boutique',cat:'Catégorie',cats:'Catégories',product:'Article',cart:'Panier',checkout:'Commande',success:'Commande enregistrée',admin:'Espace vendeur'};
+var TT='https://www.tiktok.com/@kbz.shop.ci';
+var SECRET='#acces-kbz-7x4m9';
 
 K.esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
 K.fmt=function(n){return new Intl.NumberFormat('fr-FR').format(n||0)+' FCFA';};
 K.$=function(s,r){return(r||document).querySelector(s);};
 K.$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+
+/* Styles du pied de page et de la barre fixe (etape 1 du nouveau design) */
+var st=document.createElement('style');
+st.textContent=[
+'.bn{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border-top:1px solid #e5e9f2;box-shadow:0 -4px 16px rgba(15,23,42,.08);padding-bottom:env(safe-area-inset-bottom)}',
+'.bn button,.bn a{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border:0;background:none;font:600 12px system-ui,sans-serif;color:#5b6478;text-decoration:none;cursor:pointer}',
+'.bn button:active,.bn a:active{transform:scale(.94)}',
+'.bn span{font-size:20px;line-height:1}',
+'.bn .on{color:#2447e5}',
+'.bn .on::before{content:"";position:absolute;top:0;width:28px;height:3px;border-radius:0 0 3px 3px;background:#ffc933}',
+'.bn a{color:#15803d}',
+'.bnb{position:absolute;top:2px;left:calc(50% + 6px);min-width:18px;height:18px;border-radius:9px;background:#d92d3a;color:#fff;font:700 11px/18px system-ui,sans-serif;text-align:center;font-style:normal}',
+'body.hasbn{padding-bottom:64px}',
+'.ft2{background:#0f172a;color:#e2e8f0;text-align:center;padding:28px 18px 22px;font-size:14px}',
+'.ft2 a{color:#cbd5e1}',
+'.ft2b b{display:block;font-size:22px;letter-spacing:1px;color:#fff}',
+'.ft2b span{display:block;margin-top:4px;color:#ffc933;font-size:13px}',
+'.ft2s{display:flex;gap:14px;justify-content:center;margin:18px 0}',
+'.ft2s a{width:46px;height:46px;border-radius:50%;border:1.5px solid #3b4a6b;display:flex;align-items:center;justify-content:center}',
+'.ft2s svg{width:22px;height:22px}',
+'.ft2 .ft2w{display:inline-block;background:#15803d;color:#fff;font-weight:700;padding:12px 22px;border-radius:999px;text-decoration:none}',
+'.ft2 p{margin:14px 0 0;color:#94a3b8}',
+'.ft2 ul{list-style:none;display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;margin:16px 0 0;padding:0;font-size:13px}'
+].join('');
+document.head.appendChild(st);
 
 /* Messages annonces aux lecteurs d'ecran */
 var live=document.createElement('div');
@@ -101,7 +128,7 @@ K.waLink=function(text){
   return'https://wa.me/'+(K.cfg.whatsapp||'')+'?text='+encodeURIComponent(text);
 };
 
-/* ---------- En-tete, pied de page ---------- */
+/* ---------- En-tete, barre fixe, pied de page ---------- */
 K.renderHd=function(){
   var h=K.$('#hd');
   if(!h)return;
@@ -112,20 +139,49 @@ K.renderHd=function(){
     '<nav class="nav" aria-label="Menu principal"><button data-go="shop">Boutique</button>'+
     '<button class="cartb" data-go="cart" aria-label="Panier, '+n+' article'+(n>1?'s':'')+'"><span aria-hidden="true">🛍️</span>'+(n?'<span class="badge" aria-hidden="true">'+n+'</span>':'')+'</button></nav>'+
     '</div></header>';
+  K.renderBn();
+};
+K.renderBn=function(){
+  var b=K.$('#bn');
+  if(!b){
+    b=document.createElement('nav');
+    b.id='bn';b.className='bn';
+    b.setAttribute('aria-label','Navigation rapide');
+    document.body.appendChild(b);
+  }
+  var v=K.state.view,n=K.cartCount();
+  var show=v!=='admin';
+  b.style.display=show?'':'none';
+  document.body.classList.toggle('hasbn',show);
+  function it(go,ic,lb,on,x){
+    return'<button data-go="'+go+'"'+(on?' class="on" aria-current="page"':'')+'><span aria-hidden="true">'+ic+'</span>'+lb+(x||'')+'</button>';
+  }
+  b.innerHTML=it('home','🏠','Accueil',v==='home')+
+    it('shop','🛍️','Boutique',v==='shop'||v==='cat'||v==='cats'||v==='product')+
+    it('cart','🛒','Panier',v==='cart'||v==='checkout',n?'<i class="bnb">'+n+'</i>':'')+
+    '<a href="'+K.waLink('Bonjour '+(K.cfg.shop_name||'KBZ SHOP')+', j\'ai une question.')+'" target="_blank" rel="noopener"><span aria-hidden="true">💬</span>WhatsApp</a>';
 };
 K.renderFt=function(){
   var f=K.$('#ft');
   if(!f)return;
-  f.innerHTML='<footer class="ft"><nav aria-label="Informations légales"><ul style="list-style:none;display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;margin-bottom:12px">'+
+  var shop=K.esc(K.cfg.shop_name||'KBZ SHOP');
+  f.innerHTML='<footer class="ft2">'+
+    '<div class="ft2b"><b>'+shop+'</b><span>'+K.esc(K.cfg.slogan||'Ton style, ton choix.')+'</span></div>'+
+    '<div class="ft2s">'+
+    '<a href="'+TT+'" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4v10.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 4c.4 2.4 2 4 4.5 4.2"/></svg></a>'+
+    '<a href="'+K.waLink('Bonjour '+(K.cfg.shop_name||'KBZ SHOP')+', j\'ai une question.')+'" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3z"/><path d="M9 8.5c-.3.8.2 2 1.3 3.2s2.300 1.800 3.100 1.900c.6.100 1.100-.3 1.300-.8l-1.500-.9-.6.500c-.8-.3-1.600-1.100-1.900-1.900l.5-.6-.9-1.500c-.5.100-.9.600-.8 1.100z" fill="#fff" stroke="none"/></svg></a>'+
+    '</div>'+
+    '<a class="ft2w" href="'+K.waLink('Bonjour '+(K.cfg.shop_name||'KBZ SHOP')+', je voudrais commander.')+'" target="_blank" rel="noopener">Commander sur WhatsApp</a>'+
+    '<p>Livraison 1 à 2 jours à Abidjan · Paiement à la livraison ou Mobile Money</p>'+
+    '<nav aria-label="Informations légales"><ul>'+
     '<li><a href="mentions-legales.html">Mentions légales</a></li>'+
     '<li><a href="conditions-de-vente.html">Conditions de vente</a></li>'+
     '<li><a href="confidentialite.html#confidentialite">Confidentialité</a></li>'+
     '<li><a href="confidentialite.html#cookies">Cookies</a></li>'+
     '<li><a href="confidentialite.html#remboursement">Échange et remboursement</a></li>'+
     '</ul></nav>'+
-    '<p>© 2026 '+K.esc(K.cfg.shop_name||'KBZ SHOP')+' — '+K.esc(K.cfg.address||'')+'</p>'+
-    '<p>'+K.esc(K.cfg.phone||'')+(K.cfg.email?' · '+K.esc(K.cfg.email):'')+'</p>'+
-    '<p style="margin-top:10px"><button data-go="admin"><span aria-hidden="true">🔐</span> Espace Vendeur</button></p></footer>';
+    '<p>© 2026 '+shop+' — '+K.esc(K.cfg.address||'')+'</p>'+
+    '<p style="margin-top:4px">'+K.esc(K.cfg.phone||'')+(K.cfg.email?' · '+K.esc(K.cfg.email):'')+'</p></footer>';
 };
 
 /* ---------- Navigation ---------- */
@@ -165,7 +221,8 @@ K.boot=async function(){
   }
   K.renderHd();
   K.renderFt();
-  K.go('home');
+  K.go(location.hash===SECRET?'admin':'home');
+  window.addEventListener('hashchange',function(){if(location.hash===SECRET)K.go('admin');});
 };
 window.addEventListener('load',K.boot);
 })();

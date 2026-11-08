@@ -23,7 +23,30 @@ st.textContent=
 '.ctile img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}'+
 '.ctile b{display:block;padding:8px 6px 2px}'+
 '.ctile span{display:block;padding-bottom:10px;font-size:13px;opacity:.7}'+
-'.ask h2{color:#fff;margin-bottom:6px}';
+'.ask h2{color:#fff;margin-bottom:6px}'+
+'.sec .ask{background:#0f172a;background-image:none}'+
+'.hero2{background:#f4f7ff;padding:34px 0 30px;text-align:center}'+
+'.lg{position:relative;display:inline-block;overflow:hidden;padding:6px 20px}'+
+'.lg .k{display:flex;justify-content:center;font-size:76px;font-weight:900;line-height:1;color:#2447e5;letter-spacing:4px}'+
+'.lg .k span{opacity:0;transform:translateY(14px);animation:kU .5s ease forwards}'+
+'.lg .k span:nth-child(2){animation-delay:.15s}'+
+'.lg .k span:nth-child(3){animation-delay:.3s}'+
+'.lg .s{margin-top:4px;padding-left:10px;font-size:22px;font-weight:800;letter-spacing:10px;color:#0f172a;opacity:0;animation:kF .4s ease .5s forwards}'+
+'.lg .sh{position:absolute;top:0;left:0;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.85),transparent);transform:translateX(-120%) skewX(-18deg);animation:kS .9s ease .6s forwards}'+
+'.hero2 .tg{margin-top:8px;color:#5b6478;font-size:14px;font-weight:600;opacity:0;animation:kF .5s ease .95s forwards}'+
+'.hero2 h1{font-size:28px;line-height:1.15;margin:22px 0 10px;font-weight:800;color:#0f172a}'+
+'.hero2 p.hp{color:#5b6478;margin:0 auto 20px;max-width:420px}'+
+'.hbt{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}'+
+'.b1,.b2{border-radius:999px;padding:14px 24px;font-weight:700;font-size:16px;cursor:pointer}'+
+'.b1{background:#2447e5;color:#fff;border:2px solid #2447e5}'+
+'.b2{background:#fff;color:#2447e5;border:2px solid #2447e5}'+
+'.b1:active,.b2:active{transform:scale(.95)}'+
+'.hero2.nm *{animation:none!important;opacity:1!important;transform:none!important}'+
+'.hero2.nm .sh{display:none}'+
+'@keyframes kU{to{opacity:1;transform:none}}'+
+'@keyframes kF{to{opacity:1}}'+
+'@keyframes kS{to{transform:translateX(320%) skewX(-18deg)}}'+
+'@media(prefers-reduced-motion:reduce){.hero2 *{animation:none!important;opacity:1!important;transform:none!important}.hero2 .sh{display:none}}';
 document.head.appendChild(st);
 
 function vis(){return K.state.products.filter(function(p){return p.visible;});}
@@ -54,7 +77,12 @@ function quick(id){
 }
 function clicks(e){
   var b=e.target.closest('[data-add]');
-  if(b)quick(b.getAttribute('data-add'));
+  if(b){quick(b.getAttribute('data-add'));return;}
+  var s=e.target.closest('[data-scroll]');
+  if(s){
+    var t=document.getElementById(s.getAttribute('data-scroll'));
+    if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  }
 }
 
 function groups(){
@@ -69,10 +97,15 @@ function groups(){
   return {by:by,names:names};
 }
 
-/* Accueil : une rangee par categorie + recherche */
+/* Accueil : logo anime, une rangee par categorie + recherche */
 K.views.home=function(app){
   var g=groups(),phone=K.cfg.phone||'',wa=K.cfg.whatsapp||'';
-  var h='<section class="hero"><div class="wrap"><span class="tag">'+esc(K.cfg.slogan||'')+'</span><h1 style="font-size:38px;line-height:1.08;margin:16px 0;font-weight:900;color:#fff">L\'élégance urbaine à Abidjan</h1><p>Maillots, vêtements, chaussures et accessoires tendance. Commandez en quelques clics, on vous livre.</p><button class="btn" data-go="cats">Voir les catégories</button></div></section>'+
+  var seen=false;
+  try{seen=sessionStorage.getItem('kbz_intro')==='1';sessionStorage.setItem('kbz_intro','1');}catch(e){}
+  var h='<section class="hero2'+(seen?' nm':'')+'"><div class="wrap"><div class="lg" role="img" aria-label="'+esc(K.cfg.shop_name||'KBZ SHOP')+'"><div class="k" aria-hidden="true"><span>K</span><span>B</span><span>Z</span></div><div class="s" aria-hidden="true">SHOP</div><span class="sh" aria-hidden="true"></span></div>'+
+    '<div class="tg">'+esc(K.cfg.slogan||'Ton style, ton choix.')+'</div>'+
+    '<h1>L\'élégance urbaine à Abidjan</h1><p class="hp">Maillots, vêtements, chaussures et accessoires tendance. Commandez en quelques clics, on vous livre.</p>'+
+    '<div class="hbt"><button class="b1" data-scroll="cat">Découvrir la boutique</button><button class="b2" data-go="cats">Voir les catégories</button></div></div></section>'+
     '<section class="sec" id="cat"><div class="wrap"><div class="sbar"><label for="q" class="sr">Rechercher un article</label><input id="q" placeholder="Rechercher un article..." autocomplete="off"></div><p class="sr" id="rs" role="status"></p><div id="rows">';
   g.names.forEach(function(c){
     var l=g.by[c],n=esc(c);
@@ -85,8 +118,7 @@ K.views.home=function(app){
     h+='</div>';
   });
   h+='</div><div id="res" style="display:none"></div></div></section>'+
-  '<section class="sec"><div class="wrap"><h2>Comment commander</h2><p class="mut" style="margin:-6px 0 14px">Simple et rapide, en trois étapes.</p><div class="step"><span class="num">1</span><div><b>Choisis tes articles</b><span class="mut">Parcours la boutique et trouve ce qui te plaît.</span></div></div><div class="step"><span class="num">2</span><div><b>Ajoute-les au panier</b><span class="mut">Modifie les quantités et vérifie le total.</span></div></div><div class="step"><span class="num">3</span><div><b>Confirme sur WhatsApp</b><span class="mut">Ta commande arrive au vendeur, qui la confirme avec toi.</span></div></div>'+
-  '<div class="ask"><h2>Une question ?</h2><p>Écris-nous, nous te répondons avec plaisir.</p><a class="askr" target="_blank" rel="noopener" href="https://wa.me/'+esc(wa)+'"><small>WhatsApp<span class="sr"> (s\'ouvre dans WhatsApp)</span></small><b>'+esc(phone)+'</b></a>'+(K.cfg.email?'<a class="askr" href="mailto:'+esc(K.cfg.email)+'"><small>E-mail</small><b>'+esc(K.cfg.email)+'</b></a>':'')+(K.cfg.address?'<div class="askr"><small>Adresse</small><b>'+esc(K.cfg.address)+'</b></div>':'')+'</div></div></section>';
+  '<section class="sec"><div class="wrap"><div class="ask"><h2>Une question ?</h2><p>Écris-nous, nous te répondons avec plaisir.</p><a class="askr" target="_blank" rel="noopener" href="https://wa.me/'+esc(wa)+'"><small>WhatsApp<span class="sr"> (s\'ouvre dans WhatsApp)</span></small><b>'+esc(phone)+'</b></a>'+(K.cfg.email?'<a class="askr" href="mailto:'+esc(K.cfg.email)+'"><small>E-mail</small><b>'+esc(K.cfg.email)+'</b></a>':'')+(K.cfg.address?'<div class="askr"><small>Adresse</small><b>'+esc(K.cfg.address)+'</b></div>':'')+'</div></div></section>';
   app.innerHTML=h;
   var q=document.getElementById('q'),rows=document.getElementById('rows'),res=document.getElementById('res'),rs=document.getElementById('rs');
   q.oninput=function(){

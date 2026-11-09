@@ -27,13 +27,13 @@ async function upload(file){
 }
 function blankV(){return{color:'',size:'',stock:0,price:''};}
 function blank(){
-  return{id:null,p:{name:'',category:'',description:'',base_price:'',promo_price:'',visible:true},
+  return{id:null,p:{name:'',category:'',description:'',base_price:'',promo_price:'',deposit:'',visible:true},
     images:[],variants:[blankV()],rmImg:[],rmVar:[]};
 }
 function fromP(p){
   return{id:p.id,
     p:{name:p.name,category:p.category,description:p.description,base_price:p.base_price,
-       promo_price:p.promo_price==null?'':p.promo_price,visible:p.visible},
+       promo_price:p.promo_price==null?'':p.promo_price,deposit:p.deposit==null?'':p.deposit,visible:p.visible},
     images:K.images(p).map(function(i){return{id:i.id,url:i.url,color:i.color};}),
     variants:(p.product_variants||[]).map(function(v){
       return{id:v.id,color:v.color,size:v.size,stock:v.stock,price:v.price==null?'':v.price};}),
@@ -55,6 +55,7 @@ function editor(tab,E){
     h+='<label>Catégorie</label><input data-p="category" list="cats" maxlength="40" value="'+esc(P.category)+'"><datalist id="cats">'+cats.map(function(c){return '<option value="'+esc(c)+'">';}).join('')+'</datalist>';
     h+='<label>Description</label><textarea data-p="description" rows="3" maxlength="1500">'+esc(P.description)+'</textarea>';
     h+='<div class="two"><div><label>Prix (FCFA) *</label><input data-p="base_price" type="number" min="0" value="'+esc(P.base_price)+'"></div><div><label>Prix promo (facultatif)</label><input data-p="promo_price" type="number" min="0" value="'+esc(P.promo_price)+'"></div></div>';
+    h+='<label>Dépôt de confirmation (FCFA, facultatif)</label><input data-p="deposit" type="number" min="0" value="'+esc(P.deposit)+'"><p class="mut" style="margin-top:4px">Vide = règle habituelle : 2 000 FCFA, ou la moitié du prix si l\'article coûte moins de 4 000 FCFA. Un montant = dépôt exact demandé pour cet article (0 = aucun dépôt). Pour un article venu de Jumia, indique le montant à encaisser d\'avance.</p>';
     h+='<label><input type="checkbox" data-p="visible" style="width:auto"'+(P.visible?' checked':'')+'> Visible dans la boutique</label>';
     h+='<label>Photos (8 maximum). Touchez une photo pour lui donner une couleur.</label><div class="thumbs-ed">'+E.images.map(function(im,i){
       return '<div class="im"><img data-pi="'+i+'" src="'+esc(im.url)+'" alt=""><b data-del="'+i+'">✕</b><span class="mut" style="font-size:10px;display:block;text-align:center">'+esc(im.color||'toutes')+'</span></div>';}).join('')+'</div>';
@@ -76,6 +77,8 @@ function editor(tab,E){
     if(name.length<2){er.textContent='Le nom est obligatoire.';return;}
     if(isNaN(bp)||bp<0){er.textContent='Prix invalide.';return;}
     if(pp!==null&&(isNaN(pp)||pp<0||pp>=bp)){er.textContent='Le prix promo doit être inférieur au prix.';return;}
+    var dp=P.deposit===''||P.deposit==null?null:parseInt(P.deposit,10);
+    if(dp!==null&&(isNaN(dp)||dp<0||dp>(pp!==null?pp:bp))){er.textContent='Le dépôt doit être compris entre 0 et le prix de l\'article.';return;}
     var seen={},vs=[];
     for(i=0;i<E.variants.length;i++){
       var v=E.variants[i],c=String(v.color).trim(),s=String(v.size).trim();
@@ -90,7 +93,7 @@ function editor(tab,E){
     btn.disabled=true;
     try{
       var row={name:name,category:String(P.category).trim(),description:String(P.description).trim(),
-        base_price:bp,promo_price:pp,visible:!!P.visible};
+        base_price:bp,promo_price:pp,deposit:dp,visible:!!P.visible};
       if(E.id)chk(await K.sb.from('products').update(row).eq('id',E.id));
       else E.id=chk(await K.sb.from('products').insert(row).select('id').single()).id;
       if(E.rmImg.length){chk(await K.sb.from('product_images').delete().in('id',E.rmImg));E.rmImg=[];}

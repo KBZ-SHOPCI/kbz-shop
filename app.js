@@ -68,7 +68,7 @@ document.body.appendChild(t);
 live.textContent=m;
 setTimeout(function(){t.remove();},bad?4500:2200);
 };
-K.PH='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="400" height="400" fill="#1a1a21"/><text x="200" y="215" font-size="60" text-anchor="middle" fill="#d4a437" font-weight="bold">KBZ</text></svg>');
+K.PH='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="400" height="400" fill="#1a1a21"/><text x="200" y="215" font-size="60" text-anchor="middle" fill="#d4a437">KBZ</text></svg>');
 K.cart=[];
 try{K.cart=JSON.parse(localStorage.getItem('kbzci_cart')||'[]');if(!Array.isArray(K.cart))K.cart=[];}catch(e){K.cart=[];}
 K.saveCart=function(){
@@ -168,7 +168,7 @@ b.id='bn';b.className='bn';
 b.setAttribute('aria-label','Navigation principale');
 document.body.appendChild(b);
 }
-var v=K.state.view,n=K.cartCount(),show=v!=='admin';
+var v=K.state.view,n=K.cartCount(),show=v!=='admin'&&v!=='checkout';
 b.style.display=show?'':'none';
 document.body.classList.toggle('hasbn',show);
 function it(go,i,lb,on,x){

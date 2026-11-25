@@ -3,6 +3,10 @@
 var K=window.K;
 K.last=null;
 var H1='style="font-size:26px;font-weight:800;margin-bottom:14px"';
+var st=document.createElement('style');
+st.textContent='#app{min-height:100vh}';
+document.head.appendChild(st);
+function BB(t){return'<button class="mut" data-go="'+t+'" style="margin:6px 0 12px"><span aria-hidden="true">←</span> Retour</button>';}
 function tot(){return{sub:K.cartTotal(),fee:parseInt(K.cfg.default_delivery_fee||'0',10)||0};}
 function say(m){var e=K.$('#cl');if(e){e.textContent='';setTimeout(function(){e.textContent=m;},60);}}
 function ic(p,s,c){return'<svg viewBox="0 0 24 24" width="'+s+'" height="'+s+'" fill="none" stroke="'+c+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';}
@@ -44,10 +48,10 @@ var TR=ic('<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
 function drawCart(app,msg,focus){
   app.onclick=null;
   if(!K.cart.length){
-    app.innerHTML='<div class="wrap sec"><h1 '+H1+' id="ct" tabindex="-1">Votre panier</h1><div class="box center"><p class="mut">Votre panier est vide.</p><p style="margin-top:12px"><button class="btn s" data-go="shop">Voir le catalogue</button></p></div><p class="sr" id="cl" role="status"></p></div>';
+    app.innerHTML='<div class="wrap sec">'+BB('home')+'<h1 '+H1+' id="ct" tabindex="-1">Votre panier</h1><div class="box center"><p class="mut">Votre panier est vide.</p><p style="margin-top:12px"><button class="btn s" data-go="shop">Voir le catalogue</button></p></div><p class="sr" id="cl" role="status"></p></div>';
   }else{
     var t=tot();
-    var h='<div class="wrap sec" style="max-width:640px"><h1 '+H1+' id="ct" tabindex="-1">Votre panier</h1><div class="box">';
+    var h='<div class="wrap sec" style="max-width:640px">'+BB('home')+'<h1 '+H1+' id="ct" tabindex="-1">Votre panier</h1><div class="box">';
     K.cart.forEach(function(i,n){
       var nm=K.esc(i.name);
       h+='<div class="line"><img src="'+K.esc(i.image)+'" alt=""><div class="t"><b>'+nm+'</b><div class="mut">'+K.esc([i.color,i.size].filter(Boolean).join(' / '))+'</div><div class="price">'+K.fmt(i.price*i.qty)+'</div><div class="qty" style="margin-top:6px"><button data-a="m" data-n="'+n+'" aria-label="Diminuer la quantité : '+nm+'">−</button><span class="sr">Quantité :</span><b>'+i.qty+'</b><button data-a="p" data-n="'+n+'" aria-label="Augmenter la quantité : '+nm+'">+</button><button data-a="d" data-n="'+n+'" aria-label="Retirer du panier : '+nm+'" style="margin-left:auto;min-width:40px;min-height:40px">'+TR+'</button></div></div></div>';
@@ -90,7 +94,7 @@ function sum(pay){
 K.views.checkout=function(app){
   app.onclick=null;
   if(!K.cart.length){K.go('cart');return;}
-  app.innerHTML='<div class="wrap sec" style="max-width:520px"><h1 '+H1+'>Votre commande</h1><div class="box"><form id="f">'+
+  app.innerHTML='<div class="wrap sec" style="max-width:520px">'+BB('cart')+'<h1 '+H1+'>Votre commande</h1><div class="box"><form id="f">'+
     '<label for="fn">Nom et prénom *</label><input id="fn" name="n" required maxlength="80" autocomplete="name">'+
     '<label for="fp">Téléphone *</label><input id="fp" name="p" type="tel" inputmode="tel" required maxlength="16" autocomplete="tel">'+
     '<label for="fa">Adresse / Commune (ex : Abobo, Cocody) *</label><input id="fa" name="a" required maxlength="200" autocomplete="street-address">'+
